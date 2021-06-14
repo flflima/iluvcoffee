@@ -5,11 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoffeesService } from './coffees.service';
 import { CoffeesController } from './coffees.controller';
 import { Module } from '@nestjs/common';
+import { COFFEE_BRANDS } from './coffees.contants';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Coffee, Flavor, Event])],
   controllers: [CoffeesController],
-  providers: [CoffeesService],
+  providers: [
+    CoffeesService,
+    { provide: COFFEE_BRANDS, useValue: ['buddy brew', 'nescafe'] },
+  ],
   exports: [CoffeesService],
 })
 export class CoffeesModule {}
