@@ -7,15 +7,28 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
   Query,
+  Scope,
 } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
-@Controller('coffees')
+@Controller({
+  path: 'coffees',
+  scope: Scope.DEFAULT,
+})
 export class CoffeesController {
-  constructor(private readonly coffeesService: CoffeesService) {}
+  constructor(
+    private readonly coffeesService: CoffeesService,
+    @Inject(REQUEST) private readonly request: Request,
+  ) {
+    console.log('CoffeesController instantiated');
+    console.log(request.headers);
+  }
 
   @Get()
   findAll(@Query() paginationQuery: PaginationQueryDto) {
