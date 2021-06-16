@@ -33,6 +33,12 @@ import appConfig from './config/app.config';
     CoffeeRatingModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // {
+    //   provide: APP_PIPE,
+    //   useClass: ValidationPipe,
+    // },
+  ],
 })
 export class AppModule {}

@@ -17,6 +17,7 @@ import {
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 
+// @UsePipes(ValidationPipe)
 @Controller({
   path: 'coffees',
   scope: Scope.DEFAULT,
@@ -30,6 +31,7 @@ export class CoffeesController {
     console.log(request.headers);
   }
 
+  // @UsePipes(ValidationPipe)
   @Get()
   findAll(@Query() paginationQuery: PaginationQueryDto) {
     return this.coffeesService.findAll(paginationQuery);
@@ -46,7 +48,10 @@ export class CoffeesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCofeeDto: UpdateCoffeeDto) {
+  update(
+    @Param('id') id: string,
+    @Body(/* ValidationPipe */) updateCofeeDto: UpdateCoffeeDto,
+  ) {
     return this.coffeesService.update(id, updateCofeeDto);
   }
 
