@@ -8,6 +8,7 @@ import { Connection, Repository } from 'typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { Event } from 'src/events/entities/event.entity';
 import { COFFEE_BRANDS } from './coffees.contants';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class CoffeesService {
@@ -18,7 +19,15 @@ export class CoffeesService {
     private readonly flavorRepository: Repository<Flavor>,
     private readonly connection: Connection,
     @Inject(COFFEE_BRANDS) private coffeeBrands: string[],
+    private readonly configService: ConfigService,
   ) {
+    // const databaseHost = this.configService.get<string>(
+    //   'DATABASE_HOST',
+    //   'localhost',
+    // );
+    // console.log(databaseHost);
+    const databaseHost = this.configService.get('database.host', 'localhost');
+    console.log(databaseHost);
     console.log('CoffeesService instantiated');
   }
 
