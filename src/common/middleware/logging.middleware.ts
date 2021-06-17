@@ -1,5 +1,4 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { SimpleConsoleLogger } from 'typeorm';
 
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware {
