@@ -8,14 +8,7 @@ import {
 
 @Injectable()
 export class CoffeesService {
-  private coffees: Coffee[] = [
-    {
-      id: 1,
-      name: 'Shipwreck Roast',
-      brand: 'Buddy Brew',
-      flavors: ['chocolate', 'vanilla'],
-    },
-  ];
+  private coffees: Coffee[] = [];
 
   findAll() {
     return this.coffees;
