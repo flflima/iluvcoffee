@@ -1,9 +1,17 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as request from 'supertest';
+import { CreateCoffeeDto } from 'src/coffees/dto/create-coffee.dto';
 import { CoffeesModule } from '../../src/coffees/coffees.module';
 
 describe('[Feature] Coffees - /coffees', () => {
+  const coffee = {
+    name: 'Shipwrek Roast',
+    brand: 'Buddy Brew',
+    flavors: ['chocolate', 'vanilla'],
+  };
+
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -24,11 +32,37 @@ describe('[Feature] Coffees - /coffees', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
+    );
     await app.init();
   });
 
-  it.todo('Create [POST /]');
-  it.todo('Get all [GET /]');
+  it('Create [POST /]', () => {
+    return request(app.getHttpServer())
+      .post('/coffees')
+      .send(coffee as CreateCoffeeDto)
+      .expect(HttpStatus.CREATED)
+      .then(({ body }) => {
+        const expectedCoffee = jasmine.objectContaining({
+          ...coffee,
+          flavors: jasmine.arrayContaining(
+            coffee.flavors.map((name) => jasmine.objectContaining({ name })),
+          ),
+        });
+        expect(body).toEqual(expectedCoffee);
+      });
+  });
+  it('Get all [GET /]', () => {
+    return request(app.getHttpServer()).get('/coffees').expect(HttpStatus.OK);
+  });
   it.todo('Get one [GET /:id]');
   it.todo('Update one [PATCH /:id]');
   it.todo('Delete one [DELETE /:id]');
