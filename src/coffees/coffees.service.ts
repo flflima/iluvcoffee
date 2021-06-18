@@ -6,7 +6,6 @@ import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
-import { Event } from 'src/events/entities/event.entity';
 import { COFFEE_BRANDS } from './coffees.contants';
 import { ConfigService, ConfigType } from '@nestjs/config';
 import coffeesConfig from './config/coffees.config';
@@ -18,23 +17,22 @@ export class CoffeesService {
     private readonly coffeeRepository: Repository<Coffee>,
     @InjectRepository(Flavor)
     private readonly flavorRepository: Repository<Flavor>,
-    private readonly connection: Connection,
-    @Inject(COFFEE_BRANDS) private coffeeBrands: string[],
+    private readonly connection: Connection /* @Inject(COFFEE_BRANDS) private coffeeBrands: string[],
     private readonly configService: ConfigService,
     @Inject(coffeesConfig.KEY)
-    private readonly coffeesConfiguration: ConfigType<typeof coffeesConfig>,
+    private readonly coffeesConfiguration: ConfigType<typeof coffeesConfig>, */,
   ) {
     // const databaseHost = this.configService.get<string>(
     //   'DATABASE_HOST',
     //   'localhost',
     // );
     // console.log(databaseHost);
-    const databaseHost = this.configService.get('database.host', 'localhost');
+    /*const databaseHost = this.configService.get('database.host', 'localhost');
     console.log(databaseHost);
     // const coffeesconfig = this.configService.get('coffees.foo');
     // console.log(coffeesconfig);
     console.log(coffeesConfiguration.foo);
-    console.log('CoffeesService instantiated');
+    console.log('CoffeesService instantiated');*/
   }
 
   findAll(paginationQuery: PaginationQueryDto) {
@@ -97,27 +95,27 @@ export class CoffeesService {
     return this.flavorRepository.create({ name });
   }
 
-  async recommendCoffee(coffee: Coffee) {
-    const queryRunner = this.connection.createQueryRunner();
+  // async recommendCoffee(coffee: Coffee) {
+  //   const queryRunner = this.connection.createQueryRunner();
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      coffee.recommendations++;
+  //   await queryRunner.connect();
+  //   await queryRunner.startTransaction();
+  //   try {
+  //     coffee.recommendations++;
 
-      const recommendEvent = new Event();
-      recommendEvent.name = 'recommend_coffee';
-      recommendEvent.type = 'coffee';
-      recommendEvent.payload = { coffeeID: coffee.id };
+  //     const recommendEvent = new Event();
+  //     recommendEvent.name = 'recommend_coffee';
+  //     recommendEvent.type = 'coffee';
+  //     recommendEvent.payload = { coffeeID: coffee.id };
 
-      await queryRunner.manager.save(coffee);
-      await queryRunner.manager.save(recommendEvent);
+  //     await queryRunner.manager.save(coffee);
+  //     await queryRunner.manager.save(recommendEvent);
 
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
-    }
-  }
+  //     await queryRunner.commitTransaction();
+  //   } catch (err) {
+  //     await queryRunner.rollbackTransaction();
+  //   } finally {
+  //     await queryRunner.release();
+  //   }
+  // }
 }
