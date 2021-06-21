@@ -1,3 +1,4 @@
+import { UpdateCoffeeDto } from './../../src/coffees/dto/update-coffee.dto';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,7 +13,15 @@ describe('[Feature] Coffees - /coffees', () => {
     flavors: ['chocolate', 'vanilla'],
   };
 
+  const updatedCoffee = {
+    name: 'Shipwrek Roast',
+    brand: 'Buddy Brew',
+    flavors: ['strawberry'],
+  };
+
   let app: INestApplication;
+
+  let coffeeId = '';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -57,15 +66,67 @@ describe('[Feature] Coffees - /coffees', () => {
             coffee.flavors.map((name) => jasmine.objectContaining({ name })),
           ),
         });
+
+        coffeeId = body.id;
+
         expect(body).toEqual(expectedCoffee);
       });
   });
+
   it('Get all [GET /]', () => {
-    return request(app.getHttpServer()).get('/coffees').expect(HttpStatus.OK);
+    return request(app.getHttpServer())
+      .get('/coffees')
+      .expect(HttpStatus.OK)
+      .then(({ body }) => {
+        const expectedCoffee = jasmine.objectContaining({
+          ...coffee,
+          flavors: jasmine.arrayContaining(
+            coffee.flavors.map((name) => jasmine.objectContaining({ name })),
+          ),
+        });
+        expect(body).toContainEqual(expectedCoffee);
+      });
   });
-  it.todo('Get one [GET /:id]');
-  it.todo('Update one [PATCH /:id]');
-  it.todo('Delete one [DELETE /:id]');
+
+  it('Get one [GET /:id]', () => {
+    return request(app.getHttpServer())
+      .get(`/coffees/${coffeeId}`)
+      .expect(HttpStatus.OK)
+      .then(({ body }) => {
+        const expectedCoffee = jasmine.objectContaining({
+          ...coffee,
+          flavors: jasmine.arrayContaining(
+            coffee.flavors.map((name) => jasmine.objectContaining({ name })),
+          ),
+        });
+        expect(body).toEqual(expectedCoffee);
+      });
+  });
+
+  it('Update one [PATCH /:id]', () => {
+    return request(app.getHttpServer())
+      .patch(`/coffees/${coffeeId}`)
+      .send({ flavors: ['strawberry'] } as UpdateCoffeeDto)
+      .expect(HttpStatus.OK)
+      .then(({ body }) => {
+        const expectedCoffee = jasmine.objectContaining({
+          ...updatedCoffee,
+          flavors: jasmine.arrayContaining(
+            updatedCoffee.flavors.map((name) =>
+              jasmine.objectContaining({ name }),
+            ),
+          ),
+        });
+        expect(body).toEqual(expectedCoffee);
+      });
+  });
+
+  it('Delete one [DELETE /:id]', () => {
+    return request(app.getHttpServer())
+      .delete(`/coffees/${coffeeId}`)
+      .send({ flavors: ['strawberry'] } as UpdateCoffeeDto)
+      .expect(HttpStatus.OK);
+  });
 
   afterAll(async () => {
     await app.close();
